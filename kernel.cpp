@@ -5,6 +5,7 @@
 // defining functions
 void gettel();
 void clock();
+void mmu();
 
 // main thing
 int main () {
