@@ -33,3 +33,8 @@ uint16_t getfreemem() {
   }
   return NOMEM;
 }
+
+// notes because the avr architecture isnt what i thought it is
+// kernel/bitmaps 0x0100-0x02FF
+// managed dynamic heaps 0x0300-0x06FF
+// hardware call stack 0x0700-0x08FF
