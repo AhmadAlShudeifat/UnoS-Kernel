@@ -9,15 +9,19 @@ bool freemem[2048] = {false}; // declares all slots are empty on startup
 // defining functions
 void gettel();
 void clock();
-void reslot();
-void freeslot();
-uint16_t virtualmmu();
+void reslot(uint16_t slot);
+void freeslot(uint16_t slot);
+uint16_t virtualmmu(uint16_t slot);
 uint16_t getfreemem();
 
 // main thing
-int main() { return 0; }
-
-uint16_t virtualmmu(bool mem) { return NOMEM; }
+int main() {
+  uint16_t avaslot = getfreemem();
+  if (avaslot != NOMEM) {
+    uint16_t vmtr = virtualmmu(avaslot);
+    reslot(avaslot);
+  }
+}
 
 void reslot(uint16_t slot) {
   freemem[slot] = true;
@@ -32,6 +36,10 @@ uint16_t getfreemem() {
     }
   }
   return NOMEM;
+}
+
+uint16_t virtualmmu(uint16_t slot) {
+  return NOMEM; // placeholder till i implement vmmu logic
 }
 
 // notes because the avr architecture isnt what i thought it is
