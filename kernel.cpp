@@ -2,18 +2,22 @@
 #include <avr/io.h>
 #include <stdint.h>
 
+// defining memory variables
+#define NOMEM 0xFFFF
+bool freemem[2048] = {false};
+
 // defining functions
 void gettel();
 void clock();
-void virtualmmu();
+uint16_t virtualmmu();
+uint16_t getfreemem();
 
 // main thing
 int main() { return 0; }
 
-void virtualmmu() {
-  bool freemem[2048] = {false};
-  int group1 = 512;
-  int group2 = 512;
-  int group3 = 512;
-  int group4 = 512;
+uint16_t virtualmmu(bool mem) { return NOMEM; }
+
+uint16_t getfreemem() {
+  for (uint16_t i = 0; i < 2048; i++) {
+  }
 }
