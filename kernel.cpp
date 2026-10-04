@@ -4,7 +4,8 @@
 
 // defining memory variables
 #define NOMEM 0xFFFF
-bool freemem[2048] = {false}; // declares all slots are empty on startup
+uint8_t freemem[256] = {false}; // declares all slots are empty on startup
+bool kernelpanic = false;
 
 // defining functions
 void gettel();
@@ -20,6 +21,10 @@ int main() {
   if (avaslot != NOMEM) {
     uint16_t vmtr = virtualmmu(avaslot);
     reslot(avaslot);
+
+    if (avaslot == NOMEM) {
+      kernelpanic = true;
+    }
   }
 }
 
@@ -46,3 +51,9 @@ uint16_t virtualmmu(uint16_t slot) {
 // kernel/bitmaps 0x0100-0x02FF
 // managed dynamic heaps 0x0300-0x06FF
 // hardware call stack 0x0700-0x08FF
+
+// ring roles
+// ring 0, kernel
+// ring 1, dynamic heap
+// ring 2, filesystem
+// ring 3, userspace
