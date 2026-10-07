@@ -6,28 +6,59 @@
 #define NOMEM 0xFFFF
 #define HEAPSTART 0x0300
 #define SLOTSIZE 8
+#define MAXPROC 40
+#define NOPID 0xFF
 uint8_t dychpmem[128] = {0}; // declares all slots in ring 1 are empty
+
+// defining dynamic heap map
+struct Process {
+  uint8_t pid;
+  uint8_t slot;
+};
+
+Process proctable[MAXPROC];
 
 // defining functions
 void gettel();
 void clock();
 void reslot(uint16_t slot);
 void freeslot(uint16_t slot);
+void killproc(uint8_t slot, uint8_t pid, uint8_t index);
 uintptr_t virtualmmu(uint16_t slot);
 uint16_t getfreemem();
 uint16_t kernelpanic();
 uint8_t fillslot(uint16_t slot, uint8_t byte, uint8_t offset);
 uint8_t readslot(uint16_t slot, uint8_t offset);
+int8_t spawnproc(uint8_t slot, uint8_t pid);
 
-// main thing
-int main() {
-  uint16_t avaslot = getfreemem();
-  if (avaslot == NOMEM) {
-    kernelpanic();
-    return 0;
+// initializer and step
+void kerninit() {
+  for (uint8_t i = 0; i < 128; i++) {
+    dychpmem[i] = 0;
   }
-  reslot(avaslot);
-  uint16_t vmtr = virtualmmu(avaslot);
+  for (uint8_t i = 0; i < MAXPROC; i++) {
+    proctable[i].pid = NOPID;
+  }
+}
+
+void kernstep() { ; }
+
+int8_t spawnproc(uint8_t slot, uint8_t pid) {
+  for (uint8_t i = 0; i < MAXPROC; i++) {
+    if (proctable[i].pid == NOPID) {
+      proctable[i].pid = pid;
+      proctable[i].slot = slot;
+      reslot(slot);
+      return i;
+    }
+  }
+  return -1;
+}
+
+void killproc(uint8_t slot, uint8_t pid, uint8_t index) {
+  proctable[index].pid = NOPID;
+  proctable[index].slot = 0;
+  freeslot(slot);
 }
 
 void reslot(uint16_t slot) {
