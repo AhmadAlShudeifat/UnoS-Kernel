@@ -14,6 +14,7 @@ uint8_t dychpmem[128] = {0}; // declares all slots in ring 1 are empty
 struct Process {
   uint8_t pid;
   uint8_t slot;
+  uint8_t offset;
 };
 
 Process proctable[MAXPROC];
@@ -23,13 +24,13 @@ void gettel();
 void clock();
 void reslot(uint16_t slot);
 void freeslot(uint16_t slot);
-void killproc(uint8_t slot, uint8_t pid, uint8_t index);
+void killproc(uint8_t slot, uint8_t index);
 uintptr_t virtualmmu(uint16_t slot);
 uint16_t getfreemem();
 uint16_t kernelpanic();
 uint8_t fillslot(uint16_t slot, uint8_t byte, uint8_t offset);
 uint8_t readslot(uint16_t slot, uint8_t offset);
-int8_t spawnproc(uint8_t slot, uint8_t pid);
+int8_t spawnproc(uint8_t slot, uint8_t offset, uint8_t pid);
 
 // initializer and step
 void kerninit() {
@@ -43,11 +44,12 @@ void kerninit() {
 
 void kernstep() { ; }
 
-int8_t spawnproc(uint8_t slot, uint8_t pid) {
+int8_t spawnproc(uint8_t slot, uint8_t offset, uint8_t pid) {
   for (uint8_t i = 0; i < MAXPROC; i++) {
     if (proctable[i].pid == NOPID) {
       proctable[i].pid = pid;
       proctable[i].slot = slot;
+      proctable[i].offset = offset;
       reslot(slot);
       return i;
     }
@@ -55,9 +57,10 @@ int8_t spawnproc(uint8_t slot, uint8_t pid) {
   return -1;
 }
 
-void killproc(uint8_t slot, uint8_t pid, uint8_t index) {
+void killproc(uint8_t slot, uint8_t index) {
   proctable[index].pid = NOPID;
   proctable[index].slot = 0;
+  proctable[index].offset = 0;
   freeslot(slot);
 }
 
