@@ -15,10 +15,13 @@ volatile uint32_t systicks = 0;
 ISR(TIMER1_COMPA_vect) { systicks++; }
 
 // defining dynamic heap map
+enum procstate { procfree = 0, procrunning, procready, procterminated };
 struct Process {
   uint8_t pid;
   uint8_t slot;
   uint8_t offset;
+  uint16_t pc;
+  procstate state;
 };
 
 Process proctable[MAXPROC];
