@@ -1,3 +1,4 @@
+#include "kernel.h"
 #include <avr/interrupt.h>
 #include <avr/io.h>
 #include <stdint.h>
@@ -20,7 +21,6 @@ struct Process {
   uint8_t pid;
   uint8_t slot;
   uint8_t offset;
-  uint16_t pc;
   procstate state;
 };
 
@@ -32,11 +32,12 @@ void clock();
 void reslot(uint16_t slot);
 void freeslot(uint16_t slot);
 void killproc(uint8_t slot, uint8_t index);
-uintptr_t virtualmmu(uint16_t slot);
+uint16_t virtualmmu(uint8_t slot, int offset);
 uint16_t getfreemem();
 uint16_t kernelpanic();
-uint8_t fillslot(uint16_t slot, uint8_t byte, uint8_t offset);
-uint8_t readslot(uint16_t slot, uint8_t offset);
+uint8_t getrq();
+uint8_t fillslot(uint8_t slot, uint8_t byte, uint8_t offset);
+uint8_t readslot(uint8_t slot, uint8_t offset);
 int8_t spawnproc(uint8_t slot, uint8_t offset, uint8_t pid);
 
 // initializer and step
@@ -44,6 +45,11 @@ void kerninit() {
   clock();
   for (uint8_t i = 0; i < 128; i++) {
     dychpmem[i] = 0;
+  }
+  for (uint8_t i = 0; i < 128; i++) {
+    for (uint8_t ofst = 0; ofst < 8; ofst++) {
+      fillslot(i, NOPID, ofst);
+    }
   }
   for (uint8_t i = 0; i < MAXPROC; i++) {
     proctable[i].pid = NOPID;
@@ -89,6 +95,8 @@ uint16_t getfreemem() {
   return NOMEM;
 }
 
+uint8_t getrq() { return 1; }
+
 void clock() {
   TCCR1A = 0;
   TCCR1B = 0;
@@ -106,17 +114,19 @@ void csi() {
   }
 }
 
-uintptr_t virtualmmu(uint16_t slot) {
-  return HEAPSTART + (slot * SLOTSIZE); // converts slot to real address
+uint16_t virtualmmu(uint8_t slot, int offset) {
+  uint16_t something =
+      HEAPSTART + (slot * SLOTSIZE); // converts slot to real address
+  return something + offset;
 }
 
 uint8_t fillslot(uint16_t slot, uint8_t byte, uint8_t offset) {
-  *(volatile uint8_t *)(virtualmmu(slot) + offset) = byte;
-  return byte;
+  // *(volatile uint8_t *)(virtualmmu(slot) + offset) = byte;
+  // return byte;
 }
 
 uint8_t readslot(uint16_t slot, uint8_t offset) {
-  return *(volatile uint8_t *)(virtualmmu(slot) + offset);
+  // return *(volatile uint8_t *)(virtualmmu(slot) + offset);
 }
 
 uint16_t kernelpanic() { return NOMEM; }
