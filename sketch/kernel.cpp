@@ -9,6 +9,7 @@
 #define SLOTSIZE 8
 #define MAXPROC 40
 #define NOPID 0xFF
+#define empslot 0x0
 uint8_t dychpmem[128] = {0}; // declares all slots in ring 1 are empty
 
 // defining cpu scheduling variables
@@ -46,11 +47,11 @@ void kerninit() {
   for (uint8_t i = 0; i < 128; i++) {
     dychpmem[i] = 0;
   }
-  // for (uint8_t i = 0; i < 128; i++) {
-  //   for (uint8_t ofst = 0; ofst < 8; ofst++) {
-  //     fillslot(i, NOPID, ofst);
-  //   }
-  // }
+  for (uint8_t slot = 0; slot < 128; slot++) {
+    for (uint8_t offset = 0; offset < 8; offset++) {
+      fillslot(slot, NOPID, offset);
+    }
+  }
   for (uint8_t i = 0; i < MAXPROC; i++) {
     proctable[i].pid = NOPID;
   }
@@ -82,8 +83,9 @@ void reslot(uint16_t slot) {
   dychpmem[slot] = 1;
 } // this marks a memory slot as filled
 
-void freeslot(uint16_t slot) {
-  dychpmem[slot] = 0;
+void freeslot(uint16_t slot, uint8_t indexslot) {
+  dychpmem[indexslot] = 0;
+  fillslot(slot, indexslot, 12);
 } // lets a slot be overwritten
 
 uint16_t getfreemem() {
@@ -125,7 +127,7 @@ uint8_t fillslot(uint8_t slot, uint8_t byte, uint8_t offset) {
   return byte;
 }
 
-uint8_t readslot(uint16_t slot, uint8_t offset) {
+uint8_t readslot(uint8_t slot, uint8_t offset) {
   return *(volatile uint8_t *)virtualmmu(slot, offset);
 }
 
