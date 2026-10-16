@@ -19,7 +19,7 @@ ISR(TIMER1_COMPA_vect) { systicks++; }
 enum procstate { procfree = 0, procrunning, procready, procterminated };
 struct Process {
   uint8_t pid;
-  uint8_t slot;
+  uint16_t slot;
   uint8_t offset;
   procstate state;
 };
@@ -46,11 +46,11 @@ void kerninit() {
   for (uint8_t i = 0; i < 128; i++) {
     dychpmem[i] = 0;
   }
-  for (uint8_t i = 0; i < 128; i++) {
-    for (uint8_t ofst = 0; ofst < 8; ofst++) {
-      fillslot(i, NOPID, ofst);
-    }
-  }
+  // for (uint8_t i = 0; i < 128; i++) {
+  //   for (uint8_t ofst = 0; ofst < 8; ofst++) {
+  //     fillslot(i, NOPID, ofst);
+  //   }
+  // }
   for (uint8_t i = 0; i < MAXPROC; i++) {
     proctable[i].pid = NOPID;
   }
@@ -120,13 +120,13 @@ uint16_t virtualmmu(uint8_t slot, int offset) {
   return something + offset;
 }
 
-uint8_t fillslot(uint16_t slot, uint8_t byte, uint8_t offset) {
-  // *(volatile uint8_t *)(virtualmmu(slot) + offset) = byte;
-  // return byte;
+uint8_t fillslot(uint8_t slot, uint8_t byte, uint8_t offset) {
+  *(volatile uint8_t *)virtualmmu(slot, offset) = byte;
+  return byte;
 }
 
 uint8_t readslot(uint16_t slot, uint8_t offset) {
-  // return *(volatile uint8_t *)(virtualmmu(slot) + offset);
+  return *(volatile uint8_t *)virtualmmu(slot, offset);
 }
 
 uint16_t kernelpanic() { return NOMEM; }
