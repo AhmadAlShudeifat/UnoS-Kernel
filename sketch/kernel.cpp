@@ -49,7 +49,7 @@ void kerninit() {
   }
   for (uint8_t slot = 0; slot < 128; slot++) {
     for (uint8_t offset = 0; offset < 8; offset++) {
-      fillslot(slot, NOPID, offset);
+      fillslot(slot, NOPID);
     }
   }
   for (uint8_t i = 0; i < MAXPROC; i++) {
@@ -85,7 +85,7 @@ void reslot(uint16_t slot) {
 
 void freeslot(uint16_t slot, uint8_t indexslot) {
   dychpmem[indexslot] = 0;
-  fillslot(slot, indexslot, 12);
+  fillslot(slot, 12);
 } // lets a slot be overwritten
 
 uint16_t getfreemem() {
