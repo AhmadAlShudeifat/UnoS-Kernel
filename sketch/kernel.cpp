@@ -38,7 +38,7 @@ uint16_t getfreemem();
 uint16_t kernelpanic();
 uint8_t getrq();
 uint8_t fillslot(uintptr_t slot, uint8_t byte);
-uint8_t readslot(uint8_t slot, uint8_t offset);
+uint8_t readslot(uintptr_t slot);
 int8_t spawnproc(uint8_t slot, uint8_t offset, uint8_t pid);
 
 // initializer and step
