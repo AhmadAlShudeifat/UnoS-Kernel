@@ -7,7 +7,7 @@
 #define NOADDR 0xFFFF
 #define HEAPSTART 0x0300
 #define SLOTSIZE 8
-#define MAXPROC 40
+#define MAXPROC 255
 #define NOPID 0xFF
 #define NOMEM 0x0
 uint8_t dychpmem[128] = {0}; // declares all slots in ring 1 are empty
@@ -30,7 +30,7 @@ Process proctable[MAXPROC];
 // defining functions
 void gettel();
 void clock();
-void reslot(uint16_t slot);
+void reslot(uint16_t slot, uint8_t index);
 void freeslot(uint16_t slot);
 void killproc(uint8_t slot, uint8_t index);
 uintptr_t virtualmmu(uint8_t slot, int offset);
@@ -39,7 +39,7 @@ uint16_t kernelpanic();
 uint8_t getrq();
 uint8_t fillslot(uintptr_t slot, uint8_t byte);
 uint8_t readslot(uintptr_t slot);
-int8_t spawnproc(uint8_t slot, uint8_t offset, uint8_t pid);
+int8_t spawnproc(uintptr_t slot, uint8_t pid);
 
 // initializer and step
 void kerninit() {
@@ -79,13 +79,14 @@ void killproc(uint8_t slot, uint8_t index) {
   freeslot(slot);
 }
 
-void reslot(uint16_t slot) {
-  dychpmem[slot] = 1;
+void reslot(uint16_t slot, uint8_t index) {
+  dychpmem[index] = 1;
+  fillslot(slot, NOPID);
 } // this marks a memory slot as filled
 
 void freeslot(uint16_t slot, uint8_t indexslot) {
   dychpmem[indexslot] = 0;
-  fillslot(slot, 12);
+  fillslot(slot, NOMEM);
 } // lets a slot be overwritten
 
 uint16_t getfreemem() {
