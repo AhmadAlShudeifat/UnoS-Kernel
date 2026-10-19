@@ -21,7 +21,7 @@ enum procstate { procfree = 0, procrunning, procready, procterminated };
 struct Process {
   uint8_t pid;
   uintptr_t slot;
-  uint8_t procount;
+  int8_t procount;
   procstate state;
 };
 
@@ -59,13 +59,15 @@ void kerninit() {
 
 void kernstep() { ; }
 
-int8_t spawnproc(uint8_t slot, uint8_t offset, uint8_t pid) {
+int8_t spawnproc(uintptr_t slot, uint8_t pid, procstate state,
+                 int8_t procount) {
   for (uint8_t i = 0; i < MAXPROC; i++) {
     if (proctable[i].pid == NOPID) {
       proctable[i].pid = pid;
       proctable[i].slot = slot;
-      proctable[i].offset = offset;
-      reslot(slot);
+      proctable[i].state = state;
+      proctable[i].procount = procount;
+      reslot(slot, i);
       return i;
     }
   }
@@ -75,7 +77,6 @@ int8_t spawnproc(uint8_t slot, uint8_t offset, uint8_t pid) {
 void killproc(uint8_t slot, uint8_t index) {
   proctable[index].pid = NOPID;
   proctable[index].slot = 0;
-  proctable[index].offset = 0;
   freeslot(slot);
 }
 
