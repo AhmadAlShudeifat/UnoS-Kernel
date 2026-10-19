@@ -20,8 +20,8 @@ ISR(TIMER1_COMPA_vect) { systicks++; }
 enum procstate { procfree = 0, procrunning, procready, procterminated };
 struct Process {
   uint8_t pid;
-  uint16_t slot;
-  uint8_t offset;
+  uintptr_t slot;
+  uint8_t procount;
   procstate state;
 };
 
