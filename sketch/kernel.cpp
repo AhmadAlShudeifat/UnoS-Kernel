@@ -7,7 +7,7 @@
 #define NOADDR 0xFFFF
 #define HEAPSTART 0x0300
 #define SLOTSIZE 8
-#define MAXPROC 255
+#define MAXPROC 254
 #define NOPID 0xFF
 #define NOMEM 0x0
 uint8_t dychpmem[128] = {0}; // declares all slots in ring 1 are empty
@@ -53,7 +53,7 @@ void kerninit() {
     }
   }
   for (uint8_t i = 0; i < MAXPROC; i++) {
-    proctable[i].pid = NOPID;
+    killproc(i)
   }
 }
 
@@ -74,7 +74,7 @@ int8_t spawnproc(uintptr_t slot, uint8_t pid, procstate state,
   return -1;
 }
 
-void killproc(uint8_t slot, uint8_t index, procstate state, int8_t procount) {
+void killproc(uint8_t slot, uint8_t index, procstate state) {
   proctable[index].pid = NOPID;
   proctable[index].slot = 0;
   proctable[index].state = state;
