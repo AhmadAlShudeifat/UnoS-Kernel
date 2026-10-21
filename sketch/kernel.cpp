@@ -74,9 +74,11 @@ int8_t spawnproc(uintptr_t slot, uint8_t pid, procstate state,
   return -1;
 }
 
-void killproc(uint8_t slot, uint8_t index) {
+void killproc(uint8_t slot, uint8_t index, procstate state, int8_t procount) {
   proctable[index].pid = NOPID;
   proctable[index].slot = 0;
+  proctable[index].state = state;
+  proctable[index].procount = 0xFF;
   freeslot(slot);
 }
 
