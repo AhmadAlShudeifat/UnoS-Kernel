@@ -1,5 +1,7 @@
 # UnoS - ATmega328P Micro-Operating System
 
+README MADE BY AI
+
 ![UnoS Banner](https://via.placeholder.com/800x200/222222/00FF00?text=UnoS:+Bare-Metal+Micro-OS+for+Arduino)
 
 UnoS is a lightweight, bare-metal operating system built entirely from scratch for the Arduino Uno (ATmega328P). It brings seamless multitasking, dynamic memory management, and a sandboxed execution environment to an 8-bit microcontroller with only 2,048 bytes of RAM.
@@ -45,3 +47,5 @@ Because UnoS handles its own compilation linking, flashing is incredibly straigh
 3.  **Connect Hardware:** Wire your OLED display via I2C (SDA to A4, SCL to A5) and your D-Pad buttons to the configured digital pins.
 4.  **Compile and Upload:** Open `sketch.ino` in the Arduino IDE, select your Arduino Uno board and COM port, and hit **Upload**. 
 5.  **Disconnect & Run:** Once flashed, the OS lives permanently on the chip. You can disconnect it from your PC, power it from a battery, and use the OLED/D-Pad interface as a standalone computer.
+
+README MADE BY AI
