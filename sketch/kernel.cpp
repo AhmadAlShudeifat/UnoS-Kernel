@@ -139,7 +139,7 @@ uint16_t kernelpanic() {
       for (uint16_t eprmaddr = 0; eprmaddr < 1024; eprmaddr++) {
         uint8_t value = EEPROM.read(eprmaddr);
         if (value == NOPID) {
-          EEPROM.update(eprmaddr, readslot(virtualmmu(slot, offset)));
+          EEPROM.update(eprmaddr, readslot(virtualmmu(indexslot, offset)));
         }
       }
     }
