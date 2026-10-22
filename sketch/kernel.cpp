@@ -1,4 +1,5 @@
 #include "kernel.h"
+#include <EEPROM.h>
 #include <avr/interrupt.h>
 #include <avr/io.h>
 #include <stdint.h>
@@ -132,7 +133,19 @@ uint8_t fillslot(uintptr_t slot, uint8_t byte) {
 
 uint8_t readslot(uintptr_t slot) { return *(volatile uint8_t *)slot; }
 
-uint16_t kernelpanic() { return NOADDR; }
+uint16_t kernelpanic() {
+  for (uint8_t indexslot = 0; indexslot < 128; indexslot++) {
+    for (uint8_t offset = 0; offset < 8; offset++) {
+      for (uint16_t eprmaddr = 0; eprmaddr < 1024; eprmaddr++) {
+        uint8_t value = EEPROM.read(eprmaddr);
+        if (value == NOPID) {
+          EEPROM.update(eprmaddr, readslot(virtualmmu(slot, offset)));
+        }
+      }
+    }
+  }
+  resetFunc();
+}
 
 // notes because the avr architecture isnt what i thought it is
 // kernel/bitmaps 0x0100-0x02FF
