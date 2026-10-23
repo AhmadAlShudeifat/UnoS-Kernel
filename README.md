@@ -1,4 +1,5 @@
 # UnoS - ATmega328P Micro-Operating System
+![UnoS Banner](https://via.placeholder.com/800x200/222222/00FF00?text=DEVELOPMENT:+PAUSED-FOR+NOW)
 
 README MADE BY AI
 
