@@ -18,12 +18,11 @@ volatile uint32_t systicks = 0;
 ISR(TIMER1_COMPA_vect) { systicks++; }
 
 // defining dynamic heap map
-enum procstate { procfree = 0, procrunning, procready, procterminated };
 struct Process {
   uint8_t pid;
   uintptr_t slot;
   int8_t procount;
-  procstate state;
+  bool running;
 };
 
 Process proctable[MAXPROC];
@@ -54,19 +53,17 @@ void kerninit() {
     }
   }
   for (uint8_t i = 0; i < MAXPROC; i++) {
-    killproc(i)
   }
 }
 
 void kernstep() { ; }
 
-int8_t spawnproc(uintptr_t slot, uint8_t pid, procstate state,
-                 int8_t procount) {
+int8_t spawnproc(uintptr_t slot, uint8_t pid, int8_t procount) {
   for (uint8_t i = 0; i < MAXPROC; i++) {
     if (proctable[i].pid == NOPID) {
       proctable[i].pid = pid;
       proctable[i].slot = slot;
-      proctable[i].state = state;
+      proctable[i].running = true;
       proctable[i].procount = procount;
       reslot(slot, i);
       return i;
@@ -75,10 +72,10 @@ int8_t spawnproc(uintptr_t slot, uint8_t pid, procstate state,
   return -1;
 }
 
-void killproc(uint8_t slot, uint8_t index, procstate state) {
+void killproc(uint8_t slot, uint8_t index) {
   proctable[index].pid = NOPID;
   proctable[index].slot = 0;
-  proctable[index].state = state;
+  proctable[index].running = false;
   proctable[index].procount = 0xFF;
   freeslot(slot);
 }
