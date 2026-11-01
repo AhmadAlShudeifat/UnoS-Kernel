@@ -33,7 +33,7 @@ void clock();
 void reslot(uintptr_t slot, uint8_t index);
 void freeslot(uint16_t slot);
 void killproc(uint8_t slot, uint8_t index);
-void scheduler(uint8_t proccess, uintptr_t slot)
+void scheduler(uint8_t proccess, uintptr_t slot);
 uintptr_t virtualmmu(uint8_t slot, int offset);
 uint16_t getfreemem();
 uint16_t kernelpanic();
@@ -64,6 +64,14 @@ void kerninit() {
 }
 
 void kernstep() { ; }
+
+void scheduler(uint8_t proccess, uintptr_t slot) {
+  for (i = 0; i < MAXPROC; i++) {
+    if (proctable[i].pid != NOPID) {
+      ;
+    }
+  }
+}
 
 int8_t spawnproc(uintptr_t slot, uint8_t pid, int8_t procount) {
   for (uint8_t i = 0; i < MAXPROC; i++) {
