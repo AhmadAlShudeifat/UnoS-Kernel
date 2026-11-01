@@ -52,7 +52,13 @@ void kerninit() {
       fillslot(slot, NOPID);
     }
   }
-  for (uint8_t i = 0; i < MAXPROC; i++) {
+  for (uint8_t index = 0; index < MAXPROC; index++) {
+    for (uint8_t slot = 0; slot < 128; slot++) {
+      for (uint8_t offset =0; offset < 8; offset++) {
+        uint16_t realslot = virtualmmu(slot, offset);
+        killproc(realslot, index);
+      }
+    }
   }
 }
 
