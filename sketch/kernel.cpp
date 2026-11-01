@@ -30,9 +30,10 @@ Process proctable[MAXPROC];
 // defining functions
 void gettel();
 void clock();
-void reslot(uint16_t slot, uint8_t index);
+void reslot(uintptr_t slot, uint8_t index);
 void freeslot(uint16_t slot);
 void killproc(uint8_t slot, uint8_t index);
+void scheduler(uint8_t proccess, uintptr_t slot)
 uintptr_t virtualmmu(uint8_t slot, int offset);
 uint16_t getfreemem();
 uint16_t kernelpanic();
