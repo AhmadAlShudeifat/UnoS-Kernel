@@ -19,7 +19,7 @@ ISR(TIMER1_COMPA_vect) { systicks++; }
 
 // defining dynamic heap map
 struct Process {
-  uint8_t pid;
+  uint;
   uintptr_t slot;
   int8_t procount;
   bool running;
@@ -65,10 +65,12 @@ void kerninit() {
 
 void kernstep() { ; }
 
-void scheduler(uint8_t proccess, uintptr_t slot) {
-  for (i = 0; i < MAXPROC; i++) {
-    if (proctable[i].pid != NOPID) {
-      ;
+void scheduler(int8_t proccess, uintptr_t slot, bool newproc) {
+  if newproc {
+    for (i = 0; i < MAXPROC; i++) {
+      if (proctable[i].pid != NOPID) {
+        spawnproc(slot, i, process)
+      }
     }
   }
 }
