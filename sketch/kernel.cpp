@@ -19,7 +19,7 @@ ISR(TIMER1_COMPA_vect) { systicks++; }
 
 // defining dynamic heap map
 struct Process {
-  uint;
+  uint8_t pid;
   uintptr_t slot;
   int8_t procount;
   bool running;
@@ -55,7 +55,7 @@ void kerninit() {
   }
   for (uint8_t index = 0; index < MAXPROC; index++) {
     for (uint8_t slot = 0; slot < 128; slot++) {
-      for (uint8_t offset =0; offset < 8; offset++) {
+      for (uint8_t offset = 0; offset < 8; offset++) {
         uint16_t realslot = virtualmmu(slot, offset);
         killproc(realslot, index);
       }
