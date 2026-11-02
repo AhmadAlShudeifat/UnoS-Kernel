@@ -8,7 +8,7 @@
 #define NOADDR 0xFFFF
 #define HEAPSTART 0x0300
 #define SLOTSIZE 8
-#define MAXPROC 254
+#define MAXPROC 16
 #define NOPID 0xFF
 #define NOMEM 0x0
 uint8_t dychpmem[128] = {0}; // declares all slots in ring 1 are empty
@@ -31,8 +31,8 @@ Process proctable[MAXPROC];
 void gettel();
 void clock();
 void reslot(uintptr_t slot, uint8_t index);
-void freeslot(uint16_t slot);
-void killproc(uint8_t slot, uint8_t index);
+void freeslot(uintptr_t slot, uint8_t indexslot);
+void killproc(uintptr_t slot, uint8_t index, uint8_t indexslot);
 void scheduler(uint8_t proccess, uintptr_t newslot, bool newproc);
 void (*resetFunc)(void) = 0;
 uintptr_t virtualmmu(uint8_t slot, int offset);
@@ -51,14 +51,14 @@ void kerninit() {
   }
   for (uint8_t slot = 0; slot < 128; slot++) {
     for (uint8_t offset = 0; offset < 8; offset++) {
-      fillslot(slot, NOPID);
+      freeslot(virtualmmu(slot, offset), slot);
     }
   }
   for (uint8_t index = 0; index < MAXPROC; index++) {
     for (uint8_t slot = 0; slot < 128; slot++) {
       for (uint8_t offset = 0; offset < 8; offset++) {
-        uint16_t realslot = virtualmmu(slot, offset);
-        killproc(realslot, index);
+        uintptr_t realslot = virtualmmu(slot, offset);
+        killproc(realslot, index, slot);
       }
     }
   }
@@ -74,9 +74,9 @@ void scheduler(int8_t proccess, uintptr_t newslot, bool newproc) {
       }
     }
   }
-  for (uint8_t pidindex; pidindex < MAXPROC; pidindex++) {
-    ...;
-  }
+  // for (uint8_t pidindex; pidindex < MAXPROC; pidindex++) {
+  //   ...;
+  // }
 }
 
 int8_t spawnproc(uintptr_t slot, uint8_t pid, int8_t procount) {
@@ -93,25 +93,25 @@ int8_t spawnproc(uintptr_t slot, uint8_t pid, int8_t procount) {
   return -1;
 }
 
-void killproc(uint16_t slot, uint8_t index) {
+void killproc(uintptr_t slot, uint8_t index, uint8_t indexslot) {
   proctable[index].pid = NOPID;
   proctable[index].slot = 0;
   proctable[index].running = false;
   proctable[index].procount = 0xFF;
-  freeslot(slot);
+  freeslot(slot, indexslot);
 }
 
-void reslot(uint16_t slot, uint8_t index) {
+void reslot(uintptr_t slot, uint8_t index) {
   dychpmem[index] = 1;
   fillslot(slot, NOPID);
 } // this marks a memory slot as filled
 
-void freeslot(uint16_t slot, uint8_t indexslot) {
+void freeslot(uintptr_t slot, uint8_t indexslot) {
   dychpmem[indexslot] = 0;
   fillslot(slot, NOMEM);
 } // lets a slot be overwritten
 
-uint16_t getfreemem() {
+uintptr_t getfreemem() {
   for (uint8_t i = 0; i < 128; i++) {
     if (dychpmem[i] == 0) {
     }
@@ -139,7 +139,7 @@ void csi() {
 }
 
 uintptr_t virtualmmu(uint8_t slot, int offset) {
-  uint16_t byteslot =
+  uintptr_t byteslot =
       HEAPSTART + (slot * SLOTSIZE); // converts slot to real address
   return byteslot + offset;
 }
