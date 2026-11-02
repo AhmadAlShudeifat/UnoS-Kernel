@@ -40,7 +40,7 @@ uint16_t kernelpanic();
 uint8_t getrq();
 uint8_t fillslot(uintptr_t slot, uint8_t byte);
 uint8_t readslot(uintptr_t slot);
-int8_t spawnproc(uintptr_t slot, uint8_t pid);
+int8_t spawnproc(uintptr_t slot, uint8_t pid, int8_t procount);
 
 // initializer and step
 void kerninit() {
@@ -66,10 +66,10 @@ void kerninit() {
 void kernstep() { ; }
 
 void scheduler(int8_t proccess, uintptr_t newslot, bool newproc) {
-  if newproc {
-    for (i = 0; i < MAXPROC; i++) {
+  if (newproc) {
+    for (uint8_t i = 0; i < MAXPROC; i++) {
       if (proctable[i].pid != NOPID) {
-        spawnproc(newslot, i, process)
+        spawnproc(newslot, i, proccess);
       }
     }
   }
