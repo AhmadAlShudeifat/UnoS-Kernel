@@ -34,6 +34,7 @@ void reslot(uintptr_t slot, uint8_t index);
 void freeslot(uint16_t slot);
 void killproc(uint8_t slot, uint8_t index);
 void scheduler(uint8_t proccess, uintptr_t newslot, bool newproc);
+void (*resetFunc)(void) = 0;
 uintptr_t virtualmmu(uint8_t slot, int offset);
 uint16_t getfreemem();
 uint16_t kernelpanic();
@@ -72,6 +73,9 @@ void scheduler(int8_t proccess, uintptr_t newslot, bool newproc) {
         spawnproc(newslot, i, proccess);
       }
     }
+  }
+  for (uint8_t pidindex; pidindex < MAXPROC; pidindex++) {
+    ...;
   }
 }
 
